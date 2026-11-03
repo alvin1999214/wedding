@@ -1,0 +1,3 @@
+{% for key, label in [('brand_name', '網站品牌名稱'), ('brand_tagline', '網站品牌標語'), ('site_title', '瀏覽器頁籤名稱（完整標題）'), ('admin_label', '後臺名稱')] %}
+<label>{{ label }}<input name="{{ key }}" value="{{ request.form.get(key, site[key]) }}" required maxlength="120"></label>
+{% endfor %}

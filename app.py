@@ -39,7 +39,9 @@ app.config.update(SECRET_KEY=persisted_secret('session.key'), SESSION_COOKIE_HTT
                   SESSION_COOKIE_SECURE=not LOCAL, SESSION_COOKIE_SAMESITE='Lax',
                   PERMANENT_SESSION_LIFETIME=timedelta(hours=8), MAX_CONTENT_LENGTH=1024*1024)
 
-DEFAULTS = {'couple': 'Jamie & Alex', 'date': '2027-05-22', 'venue': '我們的婚禮場地',
+BRANDING_DEFAULTS = {'brand_name': 'Gather', 'brand_tagline': '婚禮的美好相聚',
+                     'site_title': 'Gather · 婚禮邀請函', 'admin_label': '婚禮管理工作室'}
+DEFAULTS = {**BRANDING_DEFAULTS, 'couple': 'Jamie & Alex', 'date': '2027-05-22', 'venue': '我們的婚禮場地',
             'address': '請在後臺填寫婚禮地址', 'message': '最美的日子，因為有你。謝謝你來見證我們的故事。',
             'schedule': [{'time': '16:00', 'title': '迎賓 · 相聚的開始'}, {'time': '16:30', 'title': '證婚 · 說出我願意'},
                          {'time': '17:15', 'title': '合照 · 收藏這一刻'}, {'time': '18:30', 'title': '婚宴 · 為幸福乾杯'}],
@@ -70,7 +72,14 @@ def close_db(error):
         g.db.close()
 
 def settings():
-    return json.loads(db().execute('SELECT value FROM settings WHERE id=1').fetchone()[0])
+    return {**DEFAULTS, **json.loads(db().execute('SELECT value FROM settings WHERE id=1').fetchone()[0])}
+
+@app.context_processor
+def site_context():
+    return {'site': settings()}
+
+def branding_fields():
+    return {key: field(key, 120, True) for key in BRANDING_DEFAULTS}
 
 def csrf():
     if 'csrf' not in session:
@@ -131,8 +140,10 @@ def setup():
         elif len(password) < 12:
             flash('密碼至少需要 12 個字元。', 'error')
         else:
+            updated_settings = {**settings(), **branding_fields()}
             try:
                 db().execute('INSERT INTO admins VALUES (1,?,?)', (field('username', 80, True), generate_password_hash(password)))
+                db().execute('UPDATE settings SET value=? WHERE id=1', (json.dumps(updated_settings, ensure_ascii=False),))
                 db().commit()
             except sqlite3.IntegrityError:
                 abort(409)
@@ -212,6 +223,15 @@ def delete_group(group_id):
     db().execute('DELETE FROM groups WHERE id=?', (group_id,))
     db().commit()
     return redirect(url_for('admin', _anchor='groups'))
+
+@app.post('/admin/branding')
+@admin_required
+def save_branding():
+    updated_settings = {**settings(), **branding_fields()}
+    db().execute('UPDATE settings SET value=? WHERE id=1', (json.dumps(updated_settings, ensure_ascii=False),))
+    db().commit()
+    flash('網站名稱與標語已更新。')
+    return redirect(url_for('admin', _anchor='branding'))
 
 @app.post('/admin/settings')
 @admin_required

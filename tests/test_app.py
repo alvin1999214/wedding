@@ -10,7 +10,7 @@ from unittest.mock import patch
 TEMP = tempfile.TemporaryDirectory()
 os.environ['DATA_DIR'] = TEMP.name
 os.environ['DOMAIN'] = 'localhost'
-from app import app, db, qr_bytes
+from app import app, db, qr_bytes, BRANDING_DEFAULTS
 
 class WeddingTest(unittest.TestCase):
     def setUp(self):
@@ -32,7 +32,7 @@ class WeddingTest(unittest.TestCase):
         return self.client.post(url, data={**(data or {}), 'csrf': token})
 
     def login(self):
-        response = self.post('/admin/setup', {'token': 'test-setup-token', 'username': 'admin', 'password': 'long-test-password'})
+        response = self.post('/admin/setup', {**BRANDING_DEFAULTS, 'token': 'test-setup-token', 'username': 'admin', 'password': 'long-test-password'})
         self.assertEqual(response.status_code, 302)
         self.assertFalse(Path(TEMP.name, 'setup.token').exists())
         self.assertEqual(self.post('/admin/login', {'username': 'admin', 'password': 'long-test-password'}).status_code, 302)
@@ -138,6 +138,42 @@ class WeddingTest(unittest.TestCase):
         self.client.post('/admin/setup', data=payload, headers={'X-Forwarded-For': '192.0.2.99'})
         with app.app_context():
             self.assertIsNone(db().execute('SELECT 1 FROM attempts WHERE ip=?', ('192.0.2.99',)).fetchone())
+
+    def test_branding_setup_and_updates(self):
+        branding = {'brand_name': '我們的故事', 'brand_tagline': '今天一起相聚', 'site_title': '小明與小美的婚禮', 'admin_label': '婚禮控制室'}
+        response = self.post('/admin/setup', {**branding, 'token': 'test-setup-token', 'username': 'admin', 'password': 'long-test-password'})
+        self.assertEqual(response.status_code, 302)
+        self.assertIn('<title>小明與小美的婚禮</title>', self.client.get('/').text)
+        self.assertIn('我們的故事', self.client.get('/admin/login').text)
+        self.assertEqual(self.post('/admin/branding', branding).status_code, 302)
+        self.post('/admin/login', {'username': 'admin', 'password': 'long-test-password'})
+        guest = self.guest()
+        for path in ('/', '/invitation/'+guest, '/games/lottery?guest='+guest, '/missing', '/admin'):
+            page = self.client.get(path).text
+            self.assertIn('我們的故事', page)
+            self.assertNotIn('Gather', page)
+        updated = {**branding, 'brand_name': '<script>bad</script>', 'site_title': '新的頁籤標題'}
+        self.assertEqual(self.post('/admin/branding', updated).status_code, 302)
+        page = self.client.get('/').text
+        self.assertIn('<title>新的頁籤標題</title>', page)
+        self.assertIn('&lt;script&gt;bad&lt;/script&gt;', page)
+        self.assertNotIn('<script>bad</script>', page)
+        self.assertEqual(self.post('/admin/branding', {**branding, 'site_title': ''}).status_code, 400)
+        self.assertIn('新的頁籤標題', self.client.get('/').text)
+        self.assertEqual(self.post('/admin/branding', {**branding, 'brand_name': 'x'*121}).status_code, 400)
+
+    def test_legacy_settings_branding_defaults(self):
+        import json
+        from app import DEFAULTS
+        with app.app_context():
+            legacy = {key: value for key, value in DEFAULTS.items() if key not in BRANDING_DEFAULTS}
+            legacy['couple'] = '既有新人姓名'
+            db().execute('UPDATE settings SET value=?', (json.dumps(legacy),))
+            db().commit()
+        page = self.client.get('/')
+        self.assertEqual(page.status_code, 200)
+        self.assertIn('既有新人姓名', page.text)
+        self.assertIn('Gather', page.text)
 
     def test_login_throttling(self):
         for _ in range(15):

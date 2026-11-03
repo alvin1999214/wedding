@@ -1,0 +1,1 @@
+{% extends 'base.html' %}{% block body %}<main class="lottery-layout"><a href="/" class="brand">gather</a><span class="eyebrow">{{ error.code }} / A LITTLE PAUSE</span><h1>稍等一下</h1><p>{{ error.description if error.code != 404 else '找不到這個頁面，請確認邀請連結或聯絡新人。' }}</p><a href="/" class="button">回到婚禮封面</a></main>{% endblock %}

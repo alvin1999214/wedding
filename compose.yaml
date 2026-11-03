@@ -1,0 +1,21 @@
+services:
+  app:
+    build: .
+    restart: unless-stopped
+    environment:
+      DOMAIN: ${DOMAIN:?請在 .env 設定 DOMAIN}
+      DATA_DIR: /app/data
+    ports:
+      # 左側為主機連接埠，可自行修改；右側 8000 維持不變。
+      - "127.0.0.1:8080:8000"
+    volumes:
+      - wedding_data:/app/data
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    security_opt:
+      - no-new-privileges:true
+volumes:
+  wedding_data:

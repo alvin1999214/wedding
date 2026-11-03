@@ -1,0 +1,13 @@
+{% macro motif(kind) %}
+<svg class="section-motif motif-{{ kind }}" viewBox="0 0 180 150" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+{% if kind == 'glasses' %}
+<g class="glass-left"><path d="m48 28 35 9-11 35a18 18 0 0 1-35-9Z M54 83l-9 35 M29 114l32 8 M42 53l33 8"/></g>
+<g class="glass-right"><path d="m97 37 35-9 11 35a18 18 0 0 1-35 9Z M126 83l9 35 M119 122l32-8 M105 61l33-8"/></g>
+<path class="motif-accent" d="M90 16v10 M76 16l4 8 M104 16l-4 8"/>
+{% elif kind == 'camera' %}
+<rect x="29" y="44" width="122" height="78" rx="9"/><path d="m61 44 9-15h40l9 15 M29 64h122 M41 36h16"/><circle cx="91" cy="83" r="27"/><circle cx="91" cy="83" r="18"/><path d="M81 74a14 14 0 0 1 12-5"/><rect x="128" y="51" width="12" height="6" rx="2"/><path class="motif-accent" d="M145 16v12 M139 22h12 M162 35v8 M158 39h8"/>
+{% else %}
+<circle cx="90" cy="77" r="48"/><circle cx="90" cy="77" r="41" stroke-opacity=".35"/><path d="M90 43v34l22 13 M90 29v7 M90 118v7 M42 77h7 M131 77h7 M79 18h22 M90 18v11"/><circle cx="90" cy="77" r="3" fill="currentColor"/>
+{% endif %}
+</svg>
+{% endmacro %}

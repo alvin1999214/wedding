@@ -1,0 +1,25 @@
+{% macro transition(label, kind) %}
+<div class="chapter-transition" data-chapter="{{ kind }}" aria-hidden="true">
+  <svg viewBox="0 0 1000 200" preserveAspectRatio="xMidYMid meet">
+    <path class="chapter-wash" d="M0 130Q250 20 500 100T1000 70V200H0Z"/>
+    <path class="chapter-thread" pathLength="1" d="M-20 140C180 140 220 20 410 90S650 200 770 90 920 40 1020 70"/>
+    <g class="chapter-bloom" transform="translate(500 100)"><g class="bloom-petals"><path d="M0 0C-80-85-22-100 0-18C22-100 80-85 0 0C90-45 100 20 18 15C90 60 30 100 0 30C-30 100-90 60-18 15C-100 20-90-45 0 0Z"/></g><circle r="5"/></g>
+  </svg>
+  <span>{{ label }}</span>
+</div>
+{% endmacro %}
+{% macro atmosphere() %}
+<svg class="motion-definitions" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><defs>
+  <symbol id="floating-petal" viewBox="0 0 100 100"><path d="M19 80C-5 19 59-5 83 18C105 45 66 88 19 80Z" fill="currentColor" stroke="none"/><path d="M20 79Q45 39 75 26" stroke="var(--paper)" stroke-width="1"/></symbol>
+  <symbol id="floating-flute" viewBox="0 0 100 140"><path d="M29 12h42l-5 47a16 16 0 0 1-32 0Z M50 75v46 M30 122h40 M33 39h34"/><path d="M43 48v8 M56 24v5" opacity=".5"/></symbol>
+  <symbol id="floating-coupe" viewBox="0 0 100 140"><path d="M12 25h76c0 30-16 43-38 43S12 55 12 25Z M50 68v53 M29 122h42 M17 43h66"/><path d="M42 33h12" opacity=".5"/></symbol>
+  <symbol id="floating-camera" viewBox="0 0 140 110"><rect x="10" y="28" width="120" height="74" rx="8"/><path d="m40 28 9-16h42l9 16 M10 47h120"/><circle cx="70" cy="65" r="24"/><circle cx="70" cy="65" r="15"/><path d="M108 37h12 M61 59q4-7 12-5"/></symbol>
+  <symbol id="floating-instant" viewBox="0 0 120 140"><rect x="15" y="12" width="90" height="112" rx="8"/><path d="M15 82h90 M35 98h50 M35 104h50 M25 25h17"/><circle cx="60" cy="53" r="21"/><circle cx="60" cy="53" r="12"/><path d="M81 25h12"/></symbol>
+  <symbol id="floating-sprig" viewBox="0 0 100 160"><path d="M48 150Q70 75 45 10 M52 120C10 118 10 86 52 120 M59 95C99 88 95 61 59 95 M58 70C15 65 20 40 58 70 M52 45C85 32 75 12 52 45"/></symbol>
+</defs></svg>
+<div class="page-atmosphere" aria-hidden="true">
+{% for kind, edge, phase in [('sprig','left',0),('petal','top',0),('petal','right',0),('petal','bottom',0),('flute','left',1),('coupe','right',1),('petal','top',1),('petal','bottom',1),('sprig','left',2),('flute','bottom',2),('petal','right',2),('petal','top',2),('camera','left',3),('instant','right',3),('petal','top',3),('petal','bottom',3),('sprig','left',4),('coupe','right',4),('petal','top',4),('petal','bottom',4)] %}
+  <svg class="edge-object edge-{{ edge }} object-{{ kind }}" data-phase="{{ phase }}" data-edge="{{ edge }}" data-order="{{ loop.index0 % 4 }}" viewBox="{% if kind in ['flute','coupe'] %}0 0 100 140{% elif kind == 'camera' %}0 0 140 110{% elif kind == 'instant' %}0 0 120 140{% elif kind == 'sprig' %}0 0 100 160{% else %}0 0 100 100{% endif %}"><use href="#floating-{{ kind }}"/></svg>
+{% endfor %}
+</div>
+{% endmacro %}

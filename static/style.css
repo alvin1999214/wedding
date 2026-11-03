@@ -122,3 +122,43 @@
  .falling-petal{width:32px;height:32px}
  .petal-size-1{width:28px;height:28px}.petal-size-2{width:24px;height:24px}
 }
+
+/* A full-sized invitation, with content-driven height for names and seat labels. */
+.guest-page .hero{grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr);gap:38px;align-items:start;min-height:0}
+.hero .personal-letter-scene{width:100%;max-width:600px;padding:25px 0 10px;min-width:0}
+.personal-invitation{--envelope-height:280px;max-width:560px;aspect-ratio:auto;padding-bottom:85px;transform-style:flat}
+.personal-invitation .invitation-letter{position:relative;inset:auto;margin:0 5%;min-height:390px;padding:36px 32px;gap:19px;align-items:stretch;justify-content:flex-start;text-align:left;line-height:1.9;font-size:16px;opacity:1;transform:none;z-index:5;box-shadow:0 10px 30px #333e3610}
+.personal-invitation.motion-ready{height:var(--letter-space,var(--envelope-height));padding-bottom:0;overflow:hidden;overflow:clip;overflow-anchor:none}
+.personal-invitation.motion-ready .invitation-letter{position:absolute;inset:0 5% auto;margin:0;opacity:var(--letter-opacity);transform:translateY(var(--letter-rise));z-index:2;transition:none}
+.personal-invitation.motion-ready .envelope-front{opacity:var(--envelope-opacity,1)}
+.personal-invitation.motion-ready .envelope-flap,.personal-invitation.motion-ready .letter-seal{transition:none}
+.invitation-letter .tiny{font-size:10px;letter-spacing:2.5px}
+.invitation-letter p,.letter-seat strong,.letter-signature span{overflow-wrap:anywhere}
+.letter-greeting{font-family:Georgia,"Noto Serif TC","Songti TC",serif;font-size:23px;color:var(--sage)}
+.letter-greeting strong{font-weight:500}
+.letter-message{white-space:pre-line}
+.letter-welcome{color:#626c5f}
+.letter-seat{display:flex;flex-direction:column;gap:4px;border-block:1px solid var(--line);padding:14px 0}
+.letter-seat>span{font-size:12px;letter-spacing:2px;color:#707568}
+.letter-seat strong{font-size:21px;font-weight:500;color:var(--sage);line-height:1.5}
+.letter-signature{margin-top:auto;padding-top:8px;display:flex;flex-direction:column;gap:5px;text-align:right;color:var(--sage)}
+.letter-signature>span{font-family:Georgia,"Noto Serif TC","Songti TC",serif;font-size:19px}
+.letter-signature time{font-size:12px;letter-spacing:2px;color:#707568}
+.letter-access{font-size:14px;color:#707568}
+.personal-invitation .envelope-back,.personal-invitation .envelope-front{inset:auto 0 0;height:var(--envelope-height)}
+.personal-invitation .envelope-flap{inset:auto 0 calc(var(--envelope-height) * .38);height:calc(var(--envelope-height) * .62)}
+.personal-invitation .letter-seal{top:auto;bottom:calc(var(--envelope-height) * .25);width:80px;height:80px;padding:20px}
+.personal-invitation:not(.motion-ready) .envelope-flap{transform:rotateX(-175deg)}
+.personal-invitation:not(.motion-ready) .letter-seal{opacity:0}
+@media(max-width:760px){
+ .guest-page .hero{grid-template-columns:minmax(0,1fr);gap:8px;padding:32px 16px 40px;min-height:0;align-content:start}
+ .hero .personal-letter-scene{max-width:540px;padding:8px 0; margin-top:0}
+ .personal-invitation{--envelope-height:210px;max-width:500px;aspect-ratio:auto;padding-bottom:66px}
+ .personal-invitation .invitation-letter{margin:0 4%;padding:28px 22px;gap:17px;min-height:390px;font-size:16px}
+ .letter-greeting{font-size:22px}.letter-seat strong{font-size:20px}
+ .personal-invitation .letter-seal{width:66px;height:66px;padding:17px}
+}
+@media(prefers-reduced-motion:reduce){
+ .personal-invitation.motion-ready{height:auto;padding-bottom:56px;overflow:visible}
+ .personal-invitation.motion-ready .invitation-letter{position:relative;inset:auto;margin:0 5%;opacity:1!important;transform:none!important;z-index:5!important}
+}

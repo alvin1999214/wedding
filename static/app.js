@@ -39,18 +39,34 @@ search?.addEventListener('input', () => {
     lastTime = timestamp;
     visualScroll += (window.scrollY - visualScroll) * (1 - Math.exp(-dt / 110));
     if (reduceMotion.matches || Math.abs(window.scrollY - visualScroll) < .1) visualScroll = window.scrollY;
+    let lettersMoving = false;
     scenes.forEach(item => {
       const rect = item.art.getBoundingClientRect();
       const viewport = window.innerHeight;
-      // Unfold the envelope, then lift the paper as the guest scrolls.
-      const start = Math.max(0, rect.top + window.scrollY - viewport * .62);
-      const progress = reduceMotion.matches || item.manual ? 1 : clamp(
-        (window.scrollY - start) / Math.min(rect.height * .85, viewport * .5)
+      // Reveal the personal letter early enough to read its salutation in view.
+      const personal = item.art.classList.contains('personal-invitation');
+      const start = Math.max(0, rect.top + window.scrollY - viewport * (personal ? .85 : .62));
+      const target = reduceMotion.matches || item.manual ? 1 : clamp(
+        (window.scrollY - start) / Math.min(personal ? 220 : rect.height * .85, viewport * (personal ? .28 : .5))
       );
+      let progress = personal && !reduceMotion.matches
+        ? item.progress + (target - item.progress) * (1 - Math.exp(-dt / 135)) : target;
+      if (Math.abs(target - progress) < .001) progress = target;
+      if (personal && progress !== target) lettersMoving = true;
       item.progress = progress;
+      if (personal && progress >= .999) item.manual = true;
       const eased = smooth((progress - .4) / .6);
+      item.art.classList.add('motion-ready');
+      if (personal) {
+        const letter = item.art.querySelector('.invitation-letter');
+        const envelopeHeight = window.innerWidth <= 760 ? 210 : 280;
+        const paperHeight = letter.offsetHeight;
+        item.art.style.setProperty('--letter-space', `${envelopeHeight + eased * (paperHeight + 56 - envelopeHeight)}px`);
+        item.art.style.setProperty('--envelope-opacity', 1 - smooth((eased - .35) / .65));
+        item.art.style.setProperty('--letter-rise', `${(1 - eased) * envelopeHeight * .75}px`);
+      }
       item.art.style.setProperty('--flap-angle', `${-Math.min(1, progress * 2) * 175}deg`);
-      item.art.style.setProperty('--letter-rise', `${-eased * rect.height * .50}px`);
+      if (!personal) item.art.style.setProperty('--letter-rise', `${-eased * rect.height * .50}px`);
       item.art.style.setProperty('--letter-opacity', smooth((progress - .12) / .2));
       item.art.style.setProperty('--seal-opacity', Math.max(0, 1 - progress * 4));
       item.button.setAttribute('aria-expanded', String(progress > .7));
@@ -102,7 +118,7 @@ search?.addEventListener('input', () => {
       chapter.style.setProperty('--chapter-wave-y', `${(1 - p) * 70}px`);
       chapter.style.setProperty('--chapter-label-y', `${(1 - p) * 20}px`);
     });
-    if (visualScroll !== window.scrollY) frame = requestAnimationFrame(update);
+    if (visualScroll !== window.scrollY || lettersMoving) frame = requestAnimationFrame(update);
     else lastTime = 0;
   };
   const requestUpdate = () => { if (!frame) frame = requestAnimationFrame(update); };
@@ -114,6 +130,10 @@ search?.addEventListener('input', () => {
   if (scenes.length) {
     window.addEventListener('scroll', requestUpdate, {passive:true});
     window.addEventListener('resize', () => { measureObjects(); requestUpdate(); }, {passive:true});
+    if ('ResizeObserver' in window) {
+      const letterObserver = new ResizeObserver(requestUpdate);
+      document.querySelectorAll('.invitation-letter').forEach(letter => letterObserver.observe(letter));
+    }
     reduceMotion.addEventListener('change', requestUpdate);
     requestUpdate();
   }

@@ -1,6 +1,21 @@
-<div class="art-scene">
-  <div class="invitation-art" aria-label="繫著雙喜封印的婚禮信箋">
+<div class="art-scene{% if s is defined %} personal-letter-scene{% endif %}">
+  <div class="invitation-art{% if s is defined %} personal-invitation{% endif %}" aria-label="繫著雙喜封印的婚禮信箋">
+    {% if s is defined %}
+    <article id="wedding-letter" class="letter-card invitation-letter" aria-label="給你的婚禮邀請信">
+      <span class="tiny">A LETTER TO YOU</span>
+      <p class="letter-greeting">親愛的{% if guest %} <strong>{{ guest.name }}</strong>{% else %}你{% endif %}：</p>
+      <p class="letter-message">{{ s.message }}</p>
+      <p class="letter-welcome">誠摯邀請你，<br>與我們一起見證幸福的開始。</p>
+      {% if guest and guest.table_name %}
+      <div class="letter-seat"><span>為你預留的座位</span><strong>{{ guest.table_name }}</strong></div>
+      {% elif not guest %}
+      <p class="letter-access">請掃描你的專屬 QR code，<br>查看座位與拍照安排。</p>
+      {% endif %}
+      <div class="letter-signature"><span>{{ s.couple }} 敬邀</span><time datetime="{{ s.date }}">{{ s.date|replace('-', ' · ') }}</time></div>
+    </article>
+    {% else %}
     <div class="letter-card" aria-hidden="true"><span class="tiny">A LETTER TO YOU</span><span class="vow-script">Together,<br>always.</span><span class="letter-rule"></span><span class="tiny">從此，與你</span></div>
+    {% endif %}
     <div class="envelope-back" aria-hidden="true"></div>
     <div class="envelope-front" aria-hidden="true"></div>
     <div class="envelope-flap" aria-hidden="true"></div>
@@ -8,6 +23,6 @@
       <svg viewBox="0 0 190 182"><defs><path id="xi-half" fill-rule="evenodd" d="M34 0H46V13H80V24H46V34H73V44H7V34H34V24H0V13H34Z M9 51H71V83H9Z M21 61V73H59V61Z M17 90H30L36 102H44L50 90H63L57 102H80V114H0V102H23Z M7 122H73V162H7Z M20 133V151H60V133Z"/></defs><g fill="currentColor" transform="translate(10 10)"><use href="#xi-half"/><use href="#xi-half" x="90"/></g></svg>
     </div>
   </div>
-  <button class="art-hint" type="button" aria-expanded="false">輕觸展開信箋<span class="hint-line" aria-hidden="true"></span></button>
+  <button class="art-hint" type="button" {% if s is defined %}aria-controls="wedding-letter"{% endif %} aria-expanded="false">輕觸展開信箋<span class="hint-line" aria-hidden="true"></span></button>
   <span class="scroll-caption">向下滑動，讓故事展開</span>
 </div>

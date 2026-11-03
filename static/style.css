@@ -3,9 +3,9 @@
 /* Invitation motion shares the paper, sage and muted gold palette. */
 /* A landscape envelope, with a rising letter and folded paper edges. */
 .art-scene{padding:70px 18px 12px}
-.invitation-art{--letter-rise:0px;--flap-angle:0deg;--seal-opacity:1;position:relative;isolation:isolate;width:100%;max-width:390px;aspect-ratio:1.25;margin:0 auto 26px;border:0;border-radius:4px;background:none;perspective:1000px;transform:none;transition:none;cursor:default}
+.invitation-art{--letter-rise:0px;--letter-opacity:0;--flap-angle:0deg;--seal-opacity:1;position:relative;isolation:isolate;width:100%;max-width:390px;aspect-ratio:1.25;margin:0 auto 26px;border:0;border-radius:4px;background:none;perspective:1000px;transform:none;transition:none;cursor:default}
 .envelope-back{position:absolute;inset:30% 0 0;background:#465844;border-radius:4px;box-shadow:0 22px 36px -22px #333e3650;z-index:0}
-.letter-card{position:absolute;inset:12% 7% 8%;z-index:1;display:flex;align-items:center;justify-content:center;gap:16px;flex-direction:column;background:var(--white);border:1px solid #d9c5a9;transform:translateY(var(--letter-rise));box-shadow:0 6px 24px #333e3610}
+.letter-card{position:absolute;inset:32% 7% 6%;z-index:1;opacity:var(--letter-opacity);display:flex;align-items:center;justify-content:center;gap:16px;flex-direction:column;background:var(--white);border:1px solid #d9c5a9;transform:translateY(var(--letter-rise));box-shadow:none}
 .letter-card:before{content:"";position:absolute;inset:10px;border:1px solid var(--line);pointer-events:none}
 .letter-card .tiny{font-size:8px;letter-spacing:2px}
 .vow-script{font:italic 40px/1.1 Georgia,serif;color:var(--sage)}
@@ -15,7 +15,8 @@
 .envelope-flap{position:absolute;inset:30% 0 auto;height:43%;background:#7a8a70;clip-path:polygon(0 0,100% 0,50% 100%);transform-origin:center top;transform:rotateX(var(--flap-angle));z-index:4;backface-visibility:hidden}
 .letter-seal{position:absolute;left:50%;top:62%;z-index:5;width:66px;height:66px;padding:17px;border-radius:50%;background:var(--paper);border:1px solid var(--gold);color:var(--sage);transform:translate(-50%,-50%);opacity:var(--seal-opacity);pointer-events:none}
 .invitation-art .letter-seal svg{width:100%;filter:none}
-.manually-opened .envelope-flap,.manually-opened .letter-card{transition:transform 1.2s cubic-bezier(.2,.7,.2,1)}
+.manually-opened .envelope-flap{transition:transform .65s ease}
+.manually-opened .letter-card{transition:transform .9s cubic-bezier(.2,.7,.2,1) .4s,opacity .3s ease .2s}
 .manually-opened .letter-seal{transition:opacity .3s}
 .art-hint{display:inline-flex;align-items:center;gap:14px;justify-content:center;min-height:44px;padding:8px 14px;border:0;background:transparent;color:var(--sage);font-size:11px;line-height:1.8;letter-spacing:2px}
 .hint-line{display:block;width:24px;height:1px;background:var(--gold)}
@@ -72,12 +73,7 @@
 .guest-header,.guest-main,.guest-footer{position:relative;z-index:1}
 .motion-definitions{position:absolute;width:0;height:0;overflow:hidden}
 .page-atmosphere{position:fixed;inset:0;z-index:3;pointer-events:none;overflow:hidden;contain:strict}
-.edge-object{position:absolute;width:clamp(65px,10vw,154px);height:clamp(85px,14vw,205px);fill:var(--paper);stroke:currentColor;stroke-width:1.35;stroke-linecap:round;stroke-linejoin:round;color:var(--sage);opacity:0;transform:translate3d(0,120vh,0);filter:drop-shadow(0 8px 12px #333e360c)}
-.edge-left{left:-22px;top:28%}.edge-right{right:-20px;top:56%}
-.edge-top{top:-15px;left:78%}.edge-bottom{bottom:-18px;left:12%}
-.object-petal{width:clamp(30px,4.5vw,66px);height:clamp(38px,5vw,75px);color:#c8b499;fill:none}
-.object-petal.edge-top{color:#bac4ac}.object-petal.edge-bottom{left:68%;color:#ddc3b5}
-.object-sprig{fill:none;color:#8b9b7b}
+.edge-object{position:absolute;left:0;top:0;transform-origin:center;width:clamp(65px,10vw,154px);height:clamp(85px,14vw,205px);fill:var(--paper);stroke:currentColor;stroke-width:1.35;stroke-linecap:round;stroke-linejoin:round;color:var(--sage);opacity:0;transform:translate3d(0,120vh,0);filter:drop-shadow(0 8px 12px #333e360c)}
 .object-instant{color:var(--gold)}
 .chapter-transition{--chapter-progress:1;position:relative;height:190px;display:grid;place-items:center;overflow:hidden;pointer-events:none;margin:0 -20px;color:var(--gold)}
 .chapter-transition>svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
@@ -92,7 +88,6 @@
 .venue-section,.schedule-section{border-bottom:0}
 .guest-footer{border-top:0}
 .venue-illustration{border:1px solid #d6ddcb;box-shadow:10px 10px 0 -1px var(--paper),10px 10px 0 0 var(--line)}
-@media(min-width:1200px){.edge-left{left:max(-16px,calc((100vw - 1300px)/2))}.edge-right{right:max(-16px,calc((100vw - 1300px)/2))}}
 @media(max-width:760px){
  .art-scene{padding-top:65px}
  .hero .art-scene{padding-top:60px;max-width:340px}
@@ -102,20 +97,28 @@
  .chapter-transition{height:145px;margin:0}
  .chapter-transition>svg{width:160%;max-width:none;left:-30%}
  .chapter-transition>span{font-size:9px;letter-spacing:3px}
- .edge-object{width:64px;height:88px;fill:var(--paper)}
- .edge-left{left:-30px;top:22%}.edge-right{right:-30px;top:68%}
- .object-petal{width:28px;height:36px}
- .object-sprig{fill:none}
- .edge-top{left:88%;top:-10px}.edge-bottom{left:3%;bottom:-12px}
- .object-petal.edge-bottom{left:78%}
+ .edge-object{width:96px;height:112px;fill:var(--paper)}
+ .object-camera{width:108px;height:88px}
  .guest-nav{z-index:6}
 }
 @media(prefers-reduced-motion:reduce){
  .page-atmosphere{display:none}
- .letter-card{transform:translateY(-55px)!important}
+ .letter-card{transform:translateY(-70%)!important;opacity:1!important}
  .envelope-flap{transform:rotateX(-175deg)!important}
  .letter-seal{opacity:0!important}
  .chapter-thread{stroke-dashoffset:0!important}
  .chapter-transition>span,.bloom-petals{opacity:1!important;transform:none!important}
  .chapter-wash{transform:none!important;opacity:.4!important}
+}
+
+/* A hidden reusable pool, positioned by the scroll-triggered physics controller. */
+.falling-petal{position:absolute;top:0;left:0;width:40px;height:40px;overflow:visible;pointer-events:none;opacity:0;transform:translate3d(0,-100px,0);transform-origin:center}
+.petal-size-1{width:34px;height:34px}.petal-size-2{width:28px;height:28px}
+.petal-color-0{color:#ce8e96}.petal-color-1{color:#e5b5a4}
+.petal-color-2{color:#c8a56d}.petal-color-3{color:#b0ba9a}
+.petal-color-4{color:#baa2c2}.petal-color-5{color:#d6b882}
+.petal-color-6{color:#cc9b83}
+@media(max-width:760px){
+ .falling-petal{width:32px;height:32px}
+ .petal-size-1{width:28px;height:28px}.petal-size-2{width:24px;height:24px}
 }

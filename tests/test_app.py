@@ -43,6 +43,18 @@ class WeddingTest(unittest.TestCase):
         with app.app_context():
             return db().execute('SELECT id FROM guests WHERE name=?', (name,)).fetchone()['id']
 
+    def test_petals_work_with_strict_style_policy(self):
+        response = self.client.get('/')
+        self.assertIn("style-src 'self';", response.headers['Content-Security-Policy'])
+        petals = re.findall(r'<svg class="falling-petal [^>]+>', response.text)
+        self.assertEqual(len(petals), 32)
+        with self.client.get('/static/style.css') as stylesheet:
+            css = stylesheet.text
+        for petal in petals:
+            self.assertNotIn('style=', petal)
+        self.assertNotIn('@keyframes petal-fall', css)
+        self.assertRegex(css, r'\.falling-petal\{[^}]*opacity:0')
+
     def test_public_and_auth_guards(self):
         self.assertEqual(self.client.get('/').status_code, 200)
         self.assertEqual(self.client.get('/health').json, {'status': 'ok'})

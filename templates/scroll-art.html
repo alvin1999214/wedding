@@ -10,16 +10,24 @@
 {% endmacro %}
 {% macro atmosphere() %}
 <svg class="motion-definitions" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><defs>
-  <symbol id="floating-petal" viewBox="0 0 100 100"><path d="M19 80C-5 19 59-5 83 18C105 45 66 88 19 80Z" fill="currentColor" stroke="none"/><path d="M20 79Q45 39 75 26" stroke="var(--paper)" stroke-width="1"/></symbol>
+  <symbol id="falling-petal-0" viewBox="0 0 100 100"><path d="M22 85C-5 55 8 10 42 14Q50 24 58 14C90 5 106 52 75 73Q53 90 22 85Z" fill="currentColor" stroke="none"/><path d="M26 76Q43 49 66 29" fill="none" stroke="var(--paper)" stroke-opacity=".55" stroke-width="1.2"/></symbol>
+  <symbol id="falling-petal-1" viewBox="0 0 100 100"><path d="M22 82C-5 40 28 1 65 12C110 26 86 78 22 82Z" fill="currentColor" stroke="none"/><path d="M26 76Q43 49 66 29" fill="none" stroke="var(--paper)" stroke-opacity=".55" stroke-width="1.2"/></symbol>
+  <symbol id="falling-petal-2" viewBox="0 0 100 100"><path d="M25 88C10 47 25 10 76 9C92 46 64 81 25 88Z" fill="currentColor" stroke="none"/><path d="M26 76Q43 49 66 29" fill="none" stroke="var(--paper)" stroke-opacity=".55" stroke-width="1.2"/></symbol>
+  <symbol id="falling-petal-3" viewBox="0 0 100 100"><path d="M20 76C-2 53 12 12 40 18Q46 8 55 19Q82 1 92 33C105 68 56 98 20 76Z" fill="currentColor" stroke="none"/><path d="M26 76Q43 49 66 29" fill="none" stroke="var(--paper)" stroke-opacity=".55" stroke-width="1.2"/></symbol>
+  <symbol id="falling-petal-4" viewBox="0 0 100 100"><path d="M18 83C9 35 46 3 85 17C74 28 57 40 62 56C65 72 41 91 18 83Z" fill="currentColor" stroke="none"/><path d="M26 76Q43 49 66 29" fill="none" stroke="var(--paper)" stroke-opacity=".55" stroke-width="1.2"/></symbol>
+  <symbol id="falling-petal-5" viewBox="0 0 100 100"><path d="M16 67C2 26 33 7 57 16C91 8 105 45 80 70C57 99 25 89 16 67Z" fill="currentColor" stroke="none"/><path d="M26 76Q43 49 66 29" fill="none" stroke="var(--paper)" stroke-opacity=".55" stroke-width="1.2"/></symbol>
   <symbol id="floating-flute" viewBox="0 0 100 140"><path d="M29 12h42l-5 47a16 16 0 0 1-32 0Z M50 75v46 M30 122h40 M33 39h34"/><path d="M43 48v8 M56 24v5" opacity=".5"/></symbol>
   <symbol id="floating-coupe" viewBox="0 0 100 140"><path d="M12 25h76c0 30-16 43-38 43S12 55 12 25Z M50 68v53 M29 122h42 M17 43h66"/><path d="M42 33h12" opacity=".5"/></symbol>
   <symbol id="floating-camera" viewBox="0 0 140 110"><rect x="10" y="28" width="120" height="74" rx="8"/><path d="m40 28 9-16h42l9 16 M10 47h120"/><circle cx="70" cy="65" r="24"/><circle cx="70" cy="65" r="15"/><path d="M108 37h12 M61 59q4-7 12-5"/></symbol>
   <symbol id="floating-instant" viewBox="0 0 120 140"><rect x="15" y="12" width="90" height="112" rx="8"/><path d="M15 82h90 M35 98h50 M35 104h50 M25 25h17"/><circle cx="60" cy="53" r="21"/><circle cx="60" cy="53" r="12"/><path d="M81 25h12"/></symbol>
-  <symbol id="floating-sprig" viewBox="0 0 100 160"><path d="M48 150Q70 75 45 10 M52 120C10 118 10 86 52 120 M59 95C99 88 95 61 59 95 M58 70C15 65 20 40 58 70 M52 45C85 32 75 12 52 45"/></symbol>
 </defs></svg>
 <div class="page-atmosphere" aria-hidden="true">
-{% for kind, edge, phase in [('sprig','left',0),('petal','top',0),('petal','right',0),('petal','bottom',0),('flute','left',1),('coupe','right',1),('petal','top',1),('petal','bottom',1),('sprig','left',2),('flute','bottom',2),('petal','right',2),('petal','top',2),('camera','left',3),('instant','right',3),('petal','top',3),('petal','bottom',3),('sprig','left',4),('coupe','right',4),('petal','top',4),('petal','bottom',4)] %}
-  <svg class="edge-object edge-{{ edge }} object-{{ kind }}" data-phase="{{ phase }}" data-edge="{{ edge }}" data-order="{{ loop.index0 % 4 }}" viewBox="{% if kind in ['flute','coupe'] %}0 0 100 140{% elif kind == 'camera' %}0 0 140 110{% elif kind == 'instant' %}0 0 120 140{% elif kind == 'sprig' %}0 0 100 160{% else %}0 0 100 100{% endif %}"><use href="#floating-{{ kind }}"/></svg>
+{% for kind, edge, phase in [('flute','left',1),('coupe','right',1),('flute','bottom',2),('camera','left',3),('instant','right',3),('coupe','right',4)] %}
+  <svg class="edge-object edge-{{ edge }} object-{{ kind }}" data-phase="{{ phase }}" data-edge="{{ edge }}" data-order="{{ loop.index0 % 4 }}" viewBox="{% if kind in ['flute','coupe'] %}0 0 100 140{% elif kind == 'camera' %}0 0 140 110{% else %}0 0 120 140{% endif %}"><use href="#floating-{{ kind }}"/></svg>
+{% endfor %}
+{# Reusable pool; petals become visible only after a scroll-triggered release. #}
+{% for index in range(32) %}
+  <svg class="falling-petal petal-color-{{ index % 7 }} petal-size-{{ index % 3 }}" viewBox="0 0 100 100"><use href="#falling-petal-{{ index % 6 }}"/></svg>
 {% endfor %}
 </div>
 {% endmacro %}

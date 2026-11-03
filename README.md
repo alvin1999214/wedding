@@ -14,7 +14,7 @@
 
 ## 正式部署
 
-需要安裝 Docker Engine 與 Docker Compose plugin 的主機。Cloudflare Tunnel 由你另外設定；此 Compose 只啟動網站，不包含 cloudflared。網站只綁定主機的 `127.0.0.1`，不需要為網站開放對外的 80／443 或 8080 連接埠。
+需要安裝 Docker Engine 與 Docker Compose plugin 的主機。Cloudflare Tunnel 由你另外設定；此 Compose 只啟動網站，不包含 cloudflared。網站只綁定主機的 `127.0.0.1`，不需要為網站開放對外的 80／443 或 8001 連接埠。
 
 ```bash
 cp .env.example .env
@@ -33,24 +33,24 @@ docker compose up -d --build
 docker compose ps
 ```
 
-預設本機入口為 `http://127.0.0.1:8080`。連接埠直接在 `compose.yaml` 設定：
+預設本機入口為 `http://127.0.0.1:8001`。連接埠直接在 `compose.yaml` 設定：
 
 ```yaml
 ports:
-  - "127.0.0.1:8080:8000"
+  - "127.0.0.1:8001:8000"
 ```
 
-修改左側 `8080` 為你要的主機連接埠，右側 `8000` 是容器內部連接埠，保持不變。修改後重新執行 `docker compose up -d`。
+修改左側 `8001` 為你要的主機連接埠，右側 `8000` 是容器內部連接埠，保持不變。修改後重新執行 `docker compose up -d`。
 
 ### Cloudflare Tunnel
 
-在主機上運行 cloudflared，將公開 hostname（與 `.env` 的 `DOMAIN` 相同）對應到 HTTP service `http://127.0.0.1:8080`。若更換主機連接埠，也需同步修改 Tunnel 的 service URL。
+在主機上運行 cloudflared，將公開 hostname（與 `.env` 的 `DOMAIN` 相同）對應到 HTTP service `http://127.0.0.1:8001`。若更換主機連接埠，也需同步修改 Tunnel 的 service URL。
 
 ```text
-賓客 → https://你的網域 → Cloudflare Tunnel → http://127.0.0.1:8080 → app:8000
+賓客 → https://你的網域 → Cloudflare Tunnel → http://127.0.0.1:8001 → app:8000
 ```
 
-若 cloudflared 運行在另一個容器，該容器的 `localhost` 不是主機。可讓 cloudflared 加入本專案的 Docker network，並將 service URL 設為 `http://app:8000`；不要使用該容器內的 `127.0.0.1:8080`。
+若 cloudflared 運行在另一個容器，該容器的 `localhost` 不是主機。可讓 cloudflared 加入本專案的 Docker network，並將 service URL 設為 `http://app:8000`；不要使用該容器內的 `127.0.0.1:8001`。
 
 公開入口為 `https://你的網域`，後臺為 `https://你的網域/admin`。QR code 一律使用 `.env` 的公開網域，不會使用本機連接埠。當 `DOMAIN` 為正式網域，session cookie 保持 `Secure`，請透過 Tunnel 的 HTTPS 網址初始化及登入後臺。登入限速使用 Tunnel 提供的 `CF-Connecting-IP`；此信任建立在 origin 僅供本機／可信任 Tunnel 存取，不要將 app 直接公開至網際網路。
 
@@ -74,7 +74,7 @@ docker compose exec app cat /app/data/setup.token
 
 ### 本機 Docker 測試
 
-尚未建立 Tunnel 時，可暫時將 `.env` 設為 `DOMAIN=localhost:8080`，啟動後使用 `http://localhost:8080` 測試完整登入流程。若修改 Compose 的主機連接埠，這裡也需一致。本機模式的 QR code 僅供本機測試，手機無法用 localhost 連到主機。
+尚未建立 Tunnel 時，可暫時將 `.env` 設為 `DOMAIN=localhost:8001`，啟動後使用 `http://localhost:8001` 測試完整登入流程。若修改 Compose 的主機連接埠，這裡也需一致。本機模式的 QR code 僅供本機測試，手機無法用 localhost 連到主機。
 
 正式啟用前將 `DOMAIN` 改回公開網域，重新執行 `docker compose up -d`，再產生並印製正式 QR code。
 

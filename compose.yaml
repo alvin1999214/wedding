@@ -7,7 +7,7 @@ services:
       DATA_DIR: /app/data
     ports:
       # 左側為主機連接埠，可自行修改；右側 8000 維持不變。
-      - "127.0.0.1:8080:8000"
+      - "127.0.0.1:8001:8000"
     volumes:
       - wedding_data:/app/data
     healthcheck:
